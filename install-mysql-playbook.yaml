@@ -2,9 +2,9 @@
   become: true
   tasks:
 
-  - name: install python-2
+  - name: install python3-pip
     ansible.builtin.apt:
-      name: python2-minimal
+      name: python3-pip
       state: present
   - name: Make sure pymysql is present
     ansible.builtin.pip:
