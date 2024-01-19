@@ -1,7 +1,12 @@
 - hosts: mysql-hosts
   become: true
   tasks:
-  
+
+  - name: Make sure pymysql is present
+    ansible.builtin.pip:
+      name: pymysql
+      state: present
+
   - name: install mysql
     ansible.builtin.apt:
       name: 'mysql-server'
