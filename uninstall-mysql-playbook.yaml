@@ -1,0 +1,19 @@
+- hosts: mysql-hosts
+  become: true
+  tasks:
+    - name: Purge existing MySQL installation
+      ansible.builtin.apt:
+        name: 'mysql-server'
+        state: absent
+        purge: true
+
+    - name: Remove MySQL configuration files
+      ansible.builtin.file:
+        path: '/etc/mysql'
+        state: absent
+
+    - name: Install MySQL
+      ansible.builtin.apt:
+        name: 'mysql-server'
+        state: present
+        update_cache: true

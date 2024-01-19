@@ -1,0 +1,50 @@
+- hosts: mysql-hosts
+  become: true
+  tasks:
+  
+  - name: install mysql
+    ansible.builtin.apt:
+      name: 'mysql-server'
+      state: present
+      update_cache: true
+      purge: true
+
+  # - name: Copy mysql.conf
+  #   ansible.builtin.copy:
+  #     src: ./conf.d/mysql.conf
+  #     dest: /etc/mysql/mysql.conf  # Adjust destination path if needed
+  #     owner: "{{ ansible_user }}"
+  #     group: "{{ ansible_user }}"
+  #     mode: 0644
+  - name: Manage MySQL configuration file
+    ansible.builtin.template:
+      src: ./template/mysqld.cnf.j2  # Template file with configuration settings
+      dest: /etc/mysql/conf.d/mysqld.cnf
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: 0644
+  # - name: Set replication parameters
+  #   ansible.builtin.lineinfile:
+  #     path: /etc/mysql/conf.d/mysql.cnf
+  #     regexp: '^{{ item.regexp }}$'
+  #     line: '{{ item.line }}'
+  #   with_items:
+  #     - { regexp: '^server-id', line: 'server-id={{ mysql_server_id }}' }
+
+  - name: Start MySQL service
+    ansible.builtin.service:
+      name: mysql
+      state: restarted
+      enabled: yes
+
+  - name: Create user mysql
+    ansible.builtin.mysql_user:
+      name: mysql{{mysql_server_id}}
+      state: present
+      password: 12345
+      priv: '*.*:ALL,GRANT'
+      session_vars:
+        wsrep_on: off
+      
+      
+      
